@@ -1,0 +1,40 @@
+Installation:
+
+Just copy the extension to your eZ Publish extension directory and activate the it by 
+adding the following lines to your site.ini.append.php
+
+[ExtensionSettings]
+ActiveExtensions[]=all2egooglesitemaps
+
+Make an override for the file googlesitemaps.ini.append.php and edit the Settings for the siteaccesses. It might look like this:
+
+    [SiteAccessSettings]
+    SiteAccessArray[]
+    SiteAccessArray[]=de
+    SiteAccessArray[]=en
+
+After this the extension the sitemap you should be able to generate the sitemap 
+using the runcronjobs.php script.
+
+    # php runcronjobs.php googlesitemaps
+    Running cronjob part 'googlesitemaps'
+    Running extension/all2egooglesitemaps/cronjobs/generate.php
+    Generating Sitemap...
+
+    Sitemap has been generated!
+
+This will create a file for every siteaccess within your eZ Publish root directory. These files are usually named "sitemap_access.xml", but you can change that in the INI file.
+
+Please ensure that your Apache rewrite rules permit access to the XML File when accessing like
+http://www.all2e.com/sitemap.xml This can be done by adding the following line to your 
+.htaccess or Apache configuration file:
+
+    RewriteRule ^sitemap[^/]+.xml - [L]
+
+Please note that this line has changed in this release. If you are using a previuous release, than you might need to change it.
+
+After these steps are finished you might add the script to your crontab so it will be generated frequently. 
+You should also take a look at the googlesitemaps.ini.append.php configuration file.
+
+Please provide your feedback on http://projects.ez.no/all2egooglesitemaps/forum/general/feedback or
+contact us directly on http://www.all2e.com 
