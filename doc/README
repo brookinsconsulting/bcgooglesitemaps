@@ -1,0 +1,108 @@
+all2e Google Sitemapsextension README
+
+What is the all2e Google Sitemapsextension?
+================================
+
+all2e Google Sitemapsis a true eZ Publish extension
+that provides cronjob parts, amd class methods
+to create an XML sitemap of an eZ Publish
+website installation for the Google webmaster tools
+and other services using a cronjob.
+
+
+all2e Google Sitemapsversion
+=======================
+
+The current version of all2e Google Sitemapsis 1.1.0
+Last Major update: March 30, 2012
+
+You can find details about changes for this
+version in doc/changelogs/CHANGELOG-1.1.0
+
+
+Copyright
+=========
+
+all2e Google Sitemapsis copyright 1999-2012 Brookins consulting and eZ Systems AS
+
+See: doc/COPYRIGHT for more information on the terms of the copyright and license
+
+
+License
+=======
+
+all2e Google Sitemapsis licensed under the GNU General Public License.
+
+The complete license agreement is included in the doc/LICENSE file.
+
+all2e Google Sitemapsis free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 2 of the License.
+
+all2e Google Sitemapsis distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The GNU GPL gives you the right to use, modify and redistribute
+all2e Google Sitemapsunder certain conditions. The GNU GPL license
+is distributed with the software, see the file doc/LICENSE.
+
+It is also available at http://www.gnu.org/licenses/gpl.txt
+
+You should have received a copy of the GNU General Public License
+along with all2e Google Sitemapsin doc/LICENSE.  If not, see http://www.gnu.org/licenses/.
+
+Using all2e Google Sitemapsunder the terms of the GNU GPL is free (as in freedom).
+
+For more information or questions please contact
+license@brookinsconsulting.com
+
+
+Requirements
+============
+
+The following requirements exists for using all2e Google Sitemaps extension:
+
+o  eZ Publish version:
+
+   Make sure you use eZ Publish version 4.x (required) or higher. eZ Publish 4.6.x+ (Community Build, 2012.03+) is recommended.
+
+o  PHP version:
+
+   Make sure you have PHP 5.x or higher.
+
+
+Installation
+============
+
+Details on installing all2e Google Sitemapslocated in the file doc/INSTALL.
+
+
+Usage
+===========================
+
+The complete extension usage documentation is included in the file doc/USAGE.
+
+
+Use Cases
+============
+
+The complete extension usage documentation is included in the file doc/USECASES.
+
+
+Troubleshooting
+===============
+
+1. Read the FAQ
+   ------------
+
+   Some problems are more common than others. The most common ones
+   are listed in the the doc/FAQ.
+
+2. Support
+   -------
+
+   If you have find any problems not handled by this document or the FAQ you
+   can contact Brookins Consulting through the support system:
+   http://brookinsconsulting.com/contact

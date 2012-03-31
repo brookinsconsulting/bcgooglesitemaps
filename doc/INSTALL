@@ -1,0 +1,243 @@
+all2e Google Sitemaps extension INSTALL
+
+Introduction
+============
+
+1. What is the all2e Google Sitemaps extension?
+   ------------------------------------------------
+
+   all2e Google Sitemaps is a true eZ Publish extension
+   that provides commandline script, workflow event,
+   cronjob parts, class methods, module views and
+   admin siteaccess content structure menu items to
+   create, remove and regenerate content object
+   image alias variations.
+
+   For more information about this extension please read the README file.
+
+1. Copyright
+   ---------
+
+   all2e Google Sitemaps is copyright 2008 all2e GmbH and 1999-2012 Brookins Consulting
+
+   See: doc/COPYRIGHT for more information on the terms of the copyright and license
+
+1.1. License
+     -------
+
+     all2e Google Sitemaps is licensed under the GNU General Public License.
+    
+     The complete license agreement is included in the doc/LICENSE file.
+    
+     all2e Google Sitemaps is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, version 2 of the License.
+    
+     all2e Google Sitemaps is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+    
+     The GNU GPL gives you the right to use, modify and redistribute
+     all2e Google Sitemaps under certain conditions. The GNU GPL license
+     is distributed with the software, see the file doc/LICENSE.
+    
+     It is also available at http://www.gnu.org/licenses/gpl.txt
+    
+     You should have received a copy of the GNU General Public License
+     along with all2e Google Sitemaps in doc/LICENSE.  If not, see http://www.gnu.org/licenses/.
+    
+     Using all2e Google Sitemaps under the terms of the GNU GPL is free (as in freedom).
+
+
+2. Requirements
+   ------------
+
+   The following requirements exists for using all2e Google Sitemaps extension:
+
+   o  eZ Publish version:
+
+      Make sure you use eZ Publish version 4.x (required) or higher.
+
+      eZ Publish 4.6.x+ (Community Build, 2012.03+) is recommended.
+
+   o  PHP version:
+
+      Make sure you have PHP 5.x or higher.
+
+
+Getting eZ Publish
+==================
+
+You can download a version of eZ Publish from share.ez.no,
+you will find the various versions at:
+
+http://share.ez.no/download
+
+NOTE: You will only require eZ Publish 4.x or higher (if you have a more recent version)
+
+Information on the installation of eZ Publish can be found at:
+http://doc.ez.no/eZ-Publish/Technical-manual/4.6/Installation
+and
+http://doc.ez.no
+http://share.ez.no
+
+
+Installing all2e Google Sitemaps extension
+==========================================
+
+1. Copy the extension files into the extension directory
+   =====================================================
+
+   Copy the package into the `extension' directory
+   in the root of your eZ Publish installation.
+
+
+2. Unpack the extension package files into the extension directory
+   ===============================================================
+
+   Unpack the files in the distribution. The command
+   necessary is depends on the file you downloaded.
+
+   [tar.gz]
+   tar -zxvf all2egooglesitemaps-1_1_0.tar.gz
+
+   [zip]
+   unzip all2egooglesitemaps-1_1_0.tar.zip
+
+
+3. (Optional) Git clone the latest GitHub brookinsconsulting all2egooglesitemaps extension sources into the extension directory
+   ===============================================================
+
+   You can optionaly fetch the latest extension source code from GitHub brookinsconsulting all2egooglesitemaps repository into the extension directory
+
+cd /path/to/ezpublish;
+cd extension;
+
+mkdir all2egooglesitemaps;
+cd all2egooglesitemaps;
+
+git clone git@github.com:brookinsconsulting/all2egooglesitemaps.git . ;
+
+sudo chmod -R 777 ../all2egooglesitemaps;
+
+
+3.1. (Optional) Git download the latest GitHub brookinsconsulting all2egooglesitemaps extension sources into the extension directory
+     ===============================================================
+
+     You can optionaly fetch the latest extension source code from GitHub brookinsconsulting all2egooglesitemaps repository into the extension directory
+
+cd /path/to/ezpublish;
+cd extension;
+
+mkdir all2egooglesitemaps;
+cd all2egooglesitemaps;
+
+wget https://github.com/brookinsconsulting/all2egooglesitemaps/tarball/master;
+
+or
+
+wget https://github.com/brookinsconsulting/all2egooglesitemaps/zipball/master
+
+tar -zxf brookinsconsulting-all2egooglesitemaps-d1d1411.tar.gz;
+
+or 
+
+unzip brookinsconsulting-all2egooglesitemaps-d1d1411.tar.gz;
+
+sudo chmod -R 777 ../all2egooglesitemaps;
+
+
+4. We must now enable the extension in eZ Publish.
+   ===========================
+
+   To do this edit site.ini.append(.php) in the folder
+   /path/to/ezpublish/settings/override/. If this file does not exist;
+   create it. Locate (or add) the block
+
+   [ExtensionSettings] and add the line:
+   ActiveExtensions[]=all2egooglesitemaps
+
+   If you run several sites using only one distribution
+   and only some of the sites should use the extension,
+   make the changes in the override file of that siteaccess.
+
+   E.g /path/to/ezpublish/settings/siteaccess/ezwebin_site_user/site.ini.append(.php)
+   But instead of using ActiveExtensions you must add these lines instead:
+
+   [ExtensionSettings]
+   ActiveAccessExtensions[]=all2egooglesitemaps
+
+
+5. Regenerate eZ Publish class autoloads
+   ===========================
+
+   You must regenerate autoloads for extension classes to be available via eZ Publish autoloads. This may mean running the following different commands.
+
+cd /path/to/ezpublish;
+
+php bin/php/ezpgenerateautoloads.php -v -e;
+
+
+6. There is no need to configure all2e Google Sitemaps extension after activation
+   ===========================
+
+   There are optional settings in settings/all2egooglesitemaps.ini mostly cronjob part and xml output specific.
+
+   Create a settings override to customize these values. Review to understand extension settings options.
+
+
+7. Settings configuration
+   ===========================
+
+Make an override for the file googlesitemaps.ini.append.php and edit the Settings for the siteaccesses. It might look like this:
+
+    [SiteAccessSettings]
+    SiteAccessArray[]
+    SiteAccessArray[]=de
+    SiteAccessArray[]=en
+
+
+8. Apache rewrite rules
+   ====================
+
+Please ensure that your Apache rewrite rules permit access to the XML File when accessing like
+http://www.example.com/sitemap.xml This can be done by adding the following line to your
+.htaccess or Apache configuration file:
+
+    RewriteRule ^sitemap[^/]+.xml - [L]
+
+Please note that this line has changed in this release. If you are using a previuous release, than you might need to change it.
+
+After these steps are finished you might add the script to your crontab so it will be generated frequently.
+
+You should also take a look at the googlesitemaps.ini.append.php configuration file for other options in settings.
+
+
+Usage
+===========================
+
+The complete extension usage documentation is included in the file doc/USAGE.
+
+
+Use Cases
+===========================
+
+The complete extension usage documentation is included in the file doc/USECASES.
+
+
+Troubleshooting
+===============
+
+1. Read the FAQ
+   ------------
+
+   Some problems are more common than others. The most common ones are listed
+   in the the doc/FAQ.
+
+2. Support
+   -------
+
+   If you have find any problems not handled by this document or the FAQ you
+   can contact Brookins Consulting trough the support system:
+   http://brookinsconsulting.com/contact

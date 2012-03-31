@@ -1,0 +1,51 @@
+all2e Google Sitemaps extension USAGE
+
+Usage
+============
+
+1. Running the cronjob parts
+   ========================
+
+After this the extension the sitemap you should be able
+to generate the sitemap using the runcronjobs.php script.
+
+
+2. Running the cronjob part googlesitemaps
+   ========================
+
+       # php runcronjobs.php googlesitemaps
+
+    Running cronjob part 'googlesitemaps'
+    Running extension/all2egooglesitemaps/cronjobs/generate.php
+    Generating Sitemap...
+
+    Sitemap has been generated!
+
+This will create a file for every siteaccess within your eZ Publish root directory.
+
+These files are usually named "sitemap_access.xml", but you can change that in the INI file.
+
+
+3. Running the cronjob part googlesitemaps
+   ========================
+
+Alternatively you can use the googlesitemapsmultilingual cronjob part
+
+    # php runcronjobs.php googlesitemapsmultilingual
+
+    Running cronjob part 'googlesitemapsmultilingual'
+    Running extension/all2egooglesitemaps/cronjobs/generatemultilingual.php
+
+    Generating Sitemap...
+
+    Sitemap has been generated!
+
+This will create a single file with the content of all site languages within your eZ Publish root directory.
+
+These files are usually named "sitemap_access.xml", but you can change that in the INI file.
+
+
+4. Optional extension settings
+   ========================
+
+You should also take a look at the googlesitemaps.ini.append.php configuration file for other options in settings.
