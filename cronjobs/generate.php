@@ -1,4 +1,12 @@
 <?php
+/**
+ * File containing the all2egooglesitemaps sitemap generator cronjob part
+ *
+ * @copyright Copyright (C) 2008 all2e GmbH. All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version //autogentag//
+ * @package all2egooglesitemaps
+ */
 
 if ( !$isQuiet )
     $cli->output( "Generating Sitemap...\n"  );
