@@ -72,9 +72,20 @@ o  PHP version:
 
    Make sure you have PHP 5.x or higher.
 
+o  Google webmaster tools:
+
+   You will require a google webmaster tools account to register the sitemap with Google.
+
+   https://www.google.com/webmasters/tools/
+
 
 Installation
 ============
+
+- Install the extension
+- Test the extension via command line
+- Set up the crontab
+- Add the site map using the Google Webmaster tools
 
 Details on installing all2e Google Sitemapslocated in the file doc/INSTALL.
 

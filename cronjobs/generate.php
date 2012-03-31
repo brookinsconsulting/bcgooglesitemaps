@@ -1,6 +1,6 @@
 <?php
 /**
- * File containing the all2egooglesitemaps sitemap generator cronjob part
+ * File containing the all2egooglesitemaps siteaccess sitemap generator cronjob part
  *
  * @copyright Copyright (C) 2008 all2e GmbH. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
@@ -10,7 +10,6 @@
 
 if ( !$isQuiet )
     $cli->output( "Generating Sitemap...\n"  );
-
 
 // Get a reference to eZINI. append.php will be added automatically.
 $ini = eZINI::instance( 'site.ini' );
@@ -148,4 +147,5 @@ foreach ($languages as $language)
         $cli->output( "Sitemap for site access ".$language['siteaccess']." (language code ".$language['locale'].") has been generated!\n\n" );
     }
 }
+
 ?>

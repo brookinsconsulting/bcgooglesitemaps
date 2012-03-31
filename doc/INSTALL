@@ -190,7 +190,7 @@ php bin/php/ezpgenerateautoloads.php -v -e;
 7. Settings configuration
    ===========================
 
-Make an override for the file googlesitemaps.ini.append.php and edit the Settings for the siteaccesses. It might look like this:
+   Make an override for the file googlesitemaps.ini.append.php and edit the settings for the siteaccesses. It might look like this:
 
     [SiteAccessSettings]
     SiteAccessArray[]
@@ -201,17 +201,38 @@ Make an override for the file googlesitemaps.ini.append.php and edit the Setting
 8. Apache rewrite rules
    ====================
 
-Please ensure that your Apache rewrite rules permit access to the XML File when accessing like
-http://www.example.com/sitemap.xml This can be done by adding the following line to your
-.htaccess or Apache configuration file:
+   Please ensure that your Apache rewrite rules permit access to the XML file when accessing like http://www.example.com/sitemap.xml
+
+   This can be done by adding the following line to your .htaccess or Apache configuration file:
 
     RewriteRule ^sitemap[^/]+.xml - [L]
 
-Please note that this line has changed in this release. If you are using a previuous release, than you might need to change it.
+    or
 
-After these steps are finished you might add the script to your crontab so it will be generated frequently.
+    RewriteRule ^sitemap[^/]+.xml /var/sitemap[^/]+.xml [L]
 
-You should also take a look at the googlesitemaps.ini.append.php configuration file for other options in settings.
+    Please note that this line has changed in this release. If you are using a previuous release, than you might need to change it.
+
+    After these steps are finished you might add the script to your crontab so it will be generated frequently.
+
+    You should also take a look at the googlesitemaps.ini.append.php configuration file for other options in settings.
+
+
+9. Set up the crontab
+   ==================
+
+   You can read the following eZ Publish Cronjob documentation on how to run cronjob part scripts and how to configure crontab to run cronjob part scripts.
+
+   Running eZ Publish Cronjob part scripts, http://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/Cronjobs/Running-cronjobs
+   http://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/Cronjobs/Running-cronjobs#eztoc86298_1
+
+   Crontab configuration guide, http://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/Cronjobs/Running-cronjobs#eztoc86298_2
+
+
+10. Set up the crontab
+   ==================
+
+   You can now add the sitemap to your Google account using the Google Webmaster tools
 
 
 Usage

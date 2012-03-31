@@ -1,4 +1,13 @@
 <?php
+/**
+ * File containing the all2egooglesitemaps copyright information file
+ *
+ * @copyright Copyright (C) 2008 all2e GmbH, 1999-2012 Brookins Consutling. All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version //autogentag//
+ * @package all2egooglesitemaps
+ */
+
 class all2eGoogleSitemapsInfo
 {
     function info()
@@ -10,4 +19,5 @@ class all2eGoogleSitemapsInfo
                      );
     }
 }
+
 ?>

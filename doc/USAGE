@@ -13,7 +13,8 @@ to generate the sitemap using the runcronjobs.php script.
 2. Running the cronjob part googlesitemaps
    ========================
 
-       # php runcronjobs.php googlesitemaps
+    # cd /path/to/ezpublish/;
+    # php runcronjobs.php googlesitemaps
 
     Running cronjob part 'googlesitemaps'
     Running extension/all2egooglesitemaps/cronjobs/generate.php
@@ -31,6 +32,7 @@ These files are usually named "sitemap_access.xml", but you can change that in t
 
 Alternatively you can use the googlesitemapsmultilingual cronjob part
 
+    # cd /path/to/ezpublish/;
     # php runcronjobs.php googlesitemapsmultilingual
 
     Running cronjob part 'googlesitemapsmultilingual'
@@ -40,7 +42,7 @@ Alternatively you can use the googlesitemapsmultilingual cronjob part
 
     Sitemap has been generated!
 
-This will create a single file with the content of all site languages within your eZ Publish root directory.
+This will create a single file with the content of all site languages within your eZ Publish var directory (not root).
 
 These files are usually named "sitemap_access.xml", but you can change that in the INI file.
 
