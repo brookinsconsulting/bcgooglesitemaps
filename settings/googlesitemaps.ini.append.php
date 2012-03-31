@@ -1,4 +1,4 @@
-<?php /*
+<?php /* #?ini charset="utf-8"?
 
 [all2eGoogleSitemapSettings]
 # Define Subtree to create Sitempa from
