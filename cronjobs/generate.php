@@ -2,6 +2,7 @@
 /**
  * File containing the all2egooglesitemaps siteaccess sitemap generator cronjob part
  *
+ * @copyright Copyright (C) 1999 - 2013 Brookins Consulting. All rights reserved. 
  * @copyright Copyright (C) 2008 all2e GmbH. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
  * @version //autogentag//
@@ -82,7 +83,7 @@ foreach ($languages as $language)
         return;
     }
     
-    require_once "access.php";
+    require_once "extension/all2egooglesitemaps/lib/access.php";
     $access = changeAccess( array("name" => $language["siteaccess"],
                                   "type" => EZ_ACCESS_TYPE_URI
                                   ) );
