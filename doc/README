@@ -23,7 +23,7 @@ version in doc/changelogs/CHANGELOG-1.1.1
 Copyright
 =========
 
-all2e Google Sitemapsis copyright 1999-2013 Brookins consulting and eZ Systems AS
+all2e Google Sitemapsis copyright 1999 - 2013 Brookins Consulting, all2e and eZ Systems AS
 
 See: doc/COPYRIGHT for more information on the terms of the copyright and license
 
@@ -66,7 +66,7 @@ The following requirements exists for using all2e Google Sitemaps extension:
 
 o  eZ Publish version:
 
-   Make sure you use eZ Publish version 5.x (required) or higher. eZ Publish 5.1.x+ (Community Build, 2013.05+) is recommended.
+   Make sure you use eZ Publish version 4.x (required) or higher. eZ Publish 5.1.x+ (Community Build, 2013.05+) is recommended.
 
 o  PHP version:
 
