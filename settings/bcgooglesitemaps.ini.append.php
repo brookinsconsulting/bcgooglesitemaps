@@ -6,7 +6,7 @@ SitemapRootNodeID=2
 # Define the XML file
 Filename=sitemap
 Filesuffix=.xml
-# related to the eZ Publish root directory
+# Relative to the eZ Publish root directory
 Path=
 
 [SiteAccessSettings]
