@@ -102,7 +102,7 @@ Installation of dynamic realtime sitemap generator
 ==================================================
 
 - Install and activate the extension
-- Test the extension via browser
+- Test the extension via browser, http://example.com/googlesitemapdynamic/sitemap/2
 - Verify the sitemap was generated correctly
 - Add the sitemap using the Google Webmaster tools, https://www.google.com/webmasters/sitemaps/
 

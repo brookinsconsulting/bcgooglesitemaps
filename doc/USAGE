@@ -56,7 +56,7 @@ You should also take a look at the googlesitemaps.ini.append.php configuration f
 5. Accessing the dynamic sitemap module view
    ========================
 
-    Load the dynamic sitemaps module view, http://example.com/googlesitemapdynamic/sitemap/2
+Load the dynamic sitemaps module view, http://example.com/googlesitemapdynamic/sitemap/2
 
 This will create a dynamic sitemap content fresh each time loaded
 

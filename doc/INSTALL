@@ -238,7 +238,7 @@ php bin/php/ezpgenerateautoloads.php -v -e;
 11. Dynamic module view sitemap
     ===========================
 
-You can optionally skip the cronjob based sitemap generator and use the module view instead which is dynamic and generated in real time.
+You can optionally skip the cronjob based sitemap generator and use the module view instead which is dynamic and generated in real time. http://example.com/googlesitemapdynamic/sitemap/2
 
 
 12. There is no need to configure BC Google Sitemaps extension after activation
