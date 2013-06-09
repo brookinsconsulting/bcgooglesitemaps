@@ -1,10 +1,10 @@
-all2e Google Sitemaps extension TODO
+BC Google Sitemaps extension TODO
 ==========================
 
 There are still quite a lot of features we could
-add to all2e Google Sitemaps.
+add to BC Google Sitemaps.
 
-A few users of all2e Google Sitemaps may require further
+A few users of BC Google Sitemaps may require further
 extension of the default eZ Publish image alias
 image variation image file related features.
 
@@ -17,4 +17,4 @@ Features for consideration:
 
 - Any other changes not mentioned here
 - Itegrate functionality within separate PHP class
-- Offer layout/set or module view implementations
+- Offer layout/set implementations

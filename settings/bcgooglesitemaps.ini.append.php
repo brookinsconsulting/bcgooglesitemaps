@@ -1,6 +1,6 @@
 <?php /* #?ini charset="utf-8"?
 
-[all2eGoogleSitemapSettings]
+[BCGoogleSitemapSettings]
 # Define Subtree to create Sitempa from
 SitemapRootNodeID=2
 # Define the XML file

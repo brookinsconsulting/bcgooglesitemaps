@@ -1,12 +1,26 @@
 <?php
 /**
- * File containing the all2egooglesitemaps siteaccess sitemap generator cronjob part
+ * File contains an eZ Publish cronjob part (script) to automatically
+ * fetch all the content of the eZ Publish siteaccess database content
+ * tree content nodes, transform the nodes fetched into an xml based
+ * sitemap and writes the sitemap to disk.
  *
- * @copyright Copyright (C) 1999 - 2013 Brookins Consulting. All rights reserved. 
+ * Sitemap is based on custom extension settings (array of siteaccess name strings),
+ * this script iterate over each siteaccess building an array of site languages
+ * (site locale and site url), then iterating over site language information fetch
+ * the root node of the content tree (settings based) in each language and then all
+ * child nodes in each language. Next iterating over an array of all nodes in all
+ * locales, for each node, generate the sitemap xml representing that node.
+ *
+ * Finally a valid xml sitemap file is written out to disk (settings based var/ dir root by default)
+ *
+ * File containing the bcgooglesitemaps siteaccess sitemap generator cronjob part
+ *
+ * @copyright Copyright (C) 1999 - 2014 Brookins Consulting. All rights reserved.
  * @copyright Copyright (C) 2008 all2e GmbH. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
  * @version //autogentag//
- * @package all2egooglesitemaps
+ * @package bcgooglesitemaps
  */
 
 if ( !$isQuiet )
@@ -14,27 +28,27 @@ if ( !$isQuiet )
 
 // Get a reference to eZINI. append.php will be added automatically.
 $ini = eZINI::instance( 'site.ini' );
-$googlesitemapsINI = eZINI::instance( 'googlesitemaps.ini' );
+$bcgooglesitemapsINI = eZINI::instance( 'bcgooglesitemaps.ini' );
 
 
 // Settings variables
-if ( $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'SitemapRootNodeID' ) &&
-     $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'Path' ) &&
-     $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'Filename' ) &&
-     $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'Filesuffix' ) &&
-     $googlesitemapsINI->hasVariable( 'Classes', 'ClassFilterType' ) &&
-     $googlesitemapsINI->hasVariable( 'Classes', 'ClassFilterArray' ) &&
+if ( $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'SitemapRootNodeID' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Path' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Filename' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Filesuffix' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'Classes', 'ClassFilterType' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'Classes', 'ClassFilterArray' ) &&
      $ini->hasVariable( 'SiteSettings','SiteURL' )
      )
 {
-    $sitemapRootNodeID = $googlesitemapsINI->variable( 'all2eGoogleSitemapSettings','SitemapRootNodeID' );
+    $sitemapRootNodeID = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','SitemapRootNodeID' );
 
-    $sitemapName = $googlesitemapsINI->variable( 'all2eGoogleSitemapSettings','Filename' );
-    $sitemapSuffix = $googlesitemapsINI->variable( 'all2eGoogleSitemapSettings','Filesuffix' );
-    $sitemapPath = $googlesitemapsINI->variable( 'all2eGoogleSitemapSettings','Path' );
+    $sitemapName = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Filename' );
+    $sitemapSuffix = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Filesuffix' );
+    $sitemapPath = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Path' );
 
-    $classFilterType = $googlesitemapsINI->variable( 'Classes','ClassFilterType' );
-    $classFilterArray = $googlesitemapsINI->variable( 'Classes','ClassFilterArray' );
+    $classFilterType = $bcgooglesitemapsINI->variable( 'Classes','ClassFilterType' );
+    $classFilterArray = $bcgooglesitemapsINI->variable( 'Classes','ClassFilterArray' );
 }
 else
 {
@@ -43,9 +57,9 @@ else
 }
 
 //getting custom set site access or default access
-if ($googlesitemapsINI->hasVariable( 'SiteAccessSettings', 'SiteAccessArray' ))
+if ($bcgooglesitemapsINI->hasVariable( 'SiteAccessSettings', 'SiteAccessArray' ))
 {
-    $siteAccessArray = $googlesitemapsINI->variable( 'SiteAccessSettings', 'SiteAccessArray' );
+    $siteAccessArray = $bcgooglesitemapsINI->variable( 'SiteAccessSettings', 'SiteAccessArray' );
 }
 else
 {
@@ -72,9 +86,9 @@ foreach ($languages as $language)
 {
     if ( !$isQuiet )
         $cli->output( "Generating Sitemap for Siteaccess ".$language["siteaccess"]." \n" );
-        
+
     $siteURL = $language['siteurl'];
-    
+
     // Get the Sitemap's root node
     $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $language['locale'] );
 
@@ -82,19 +96,19 @@ foreach ($languages as $language)
         $cli->output( "Invalid SitemapRootNodeID in configuration block GeneralSettings.\n" );
         return;
     }
-    
-    require_once "extension/all2egooglesitemaps/lib/access.php";
+
+    require_once "extension/bcgooglesitemaps/lib/access.php";
     $access = changeAccess( array("name" => $language["siteaccess"],
                                   "type" => EZ_ACCESS_TYPE_URI
                                   ) );
-    
+
     // Fetch the content tree
     $nodeArray = $rootNode->subTree( array(  'Language'         => $language['locale'],
                                              'ClassFilterType'  => $classFilterType,
                                              'ClassFilterArray' => $classFilterArray
                                            )
                                     );
-    
+
     $xmlRoot = "urlset";
     $xmlNode = "url";
 
@@ -114,7 +128,7 @@ foreach ($languages as $language)
     {
         // Values
         $urlAlias = 'http://'.$siteURL.'/'.$subTreeNode->attribute( 'url_alias' );
-        
+
         $object = $subTreeNode->object();
         //$depth = $subTreeNode->attribute( 'depth' );
         $modified = date("c" , $object->attribute( 'modified' ));

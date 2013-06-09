@@ -1,4 +1,4 @@
-all2e Google Sitemaps extension USAGE
+BC Google Sitemaps extension USAGE
 
 Usage
 ============
@@ -17,7 +17,7 @@ to generate the sitemap using the runcronjobs.php script.
     # php runcronjobs.php googlesitemaps
 
     Running cronjob part 'googlesitemaps'
-    Running extension/all2egooglesitemaps/cronjobs/generate.php
+    Running extension/bcgooglesitemaps/cronjobs/generate.php
     Generating Sitemap...
 
     Sitemap has been generated!
@@ -27,7 +27,7 @@ This will create a file for every siteaccess within your eZ Publish root directo
 These files are usually named "sitemap_access.xml", but you can change that in the INI file.
 
 
-3. Running the cronjob part googlesitemaps
+3. Running the googlesitemapsmultilingual cronjob part googlesitemaps
    ========================
 
 Alternatively you can use the googlesitemapsmultilingual cronjob part
@@ -36,7 +36,7 @@ Alternatively you can use the googlesitemapsmultilingual cronjob part
     # php runcronjobs.php googlesitemapsmultilingual
 
     Running cronjob part 'googlesitemapsmultilingual'
-    Running extension/all2egooglesitemaps/cronjobs/generatemultilingual.php
+    Running extension/bcgooglesitemaps/cronjobs/generatemultilingual.php
 
     Generating Sitemap...
 
@@ -51,3 +51,17 @@ These files are usually named "sitemap_access.xml", but you can change that in t
    ========================
 
 You should also take a look at the googlesitemaps.ini.append.php configuration file for other options in settings.
+
+
+5. Accessing the dynamic sitemap module view
+   ========================
+
+    Load the dynamic sitemaps module view, http://example.com/googlesitemapdynamic/sitemap/2
+
+This will create a dynamic sitemap content fresh each time loaded
+
+
+6. Optional dynamic module view settings
+   ========================
+
+You should also take a look at the googlesitemapdynamic.ini.append.php configuration file for other options in settings.

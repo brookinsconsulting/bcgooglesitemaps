@@ -11,14 +11,14 @@
  * the root node of the content tree (settings based) in each language and then all
  * child nodes in each language. Next iterating over an array of all nodes in all
  * locales, for each node, generate the sitemap xml representing that node.
- * 
+ *
  * Finally a valid xml sitemap file is written out to disk (settings based var/ dir root by default)
  *
- * @copyright Copyright (C) 1999 - 2013 Brookins Consulting. All rights reserved.
+ * @copyright Copyright (C) 1999 - 2014 Brookins Consulting. All rights reserved.
  * @copyright Copyright (C) 2008 all2e GmbH
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU GPL v2 (or later)
  * @version //autogentag//
- * @package all2egooglesitemaps
+ * @package bcgooglesitemaps
  */
 
 /**
@@ -33,37 +33,37 @@ if( !$isQuiet )
  * Get a reference to eZINI. append.php will be added automatically.
  */
 $ini = eZINI::instance( 'site.ini' );
-$googlesitemapsINI = eZINI::instance( 'googlesitemaps.ini' );
+$bcgooglesitemapsINI = eZINI::instance( 'bcgooglesitemaps.ini' );
 
 /**
  * BC: Testing for settings required by the script and defining other variables required by the script
  */
-if( $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'SitemapRootNodeID' ) &&
-     $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'Path' ) &&
-     $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'Filename' ) &&
-     $googlesitemapsINI->hasVariable( 'all2eGoogleSitemapSettings', 'Filesuffix' ) &&
-     $googlesitemapsINI->hasVariable( 'Classes', 'ClassFilterType' ) &&
-     $googlesitemapsINI->hasVariable( 'Classes', 'ClassFilterArray' ) &&
+if( $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'SitemapRootNodeID' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Path' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Filename' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Filesuffix' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'Classes', 'ClassFilterType' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'Classes', 'ClassFilterArray' ) &&
      $ini->hasVariable( 'SiteSettings','SiteURL' )
      )
 {
     /**
      * BC: Define root content tree node ID
      */
-    $sitemapRootNodeID = $googlesitemapsINI->variable( 'all2eGoogleSitemapSettings','SitemapRootNodeID' );
+    $sitemapRootNodeID = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','SitemapRootNodeID' );
 
     /**
      * BC: Define the sitemap basename, output file suffix and path to directory to write out generated sitemaps
      */
-    $sitemapName = $googlesitemapsINI->variable( 'all2eGoogleSitemapSettings','Filename' );
-    $sitemapSuffix = $googlesitemapsINI->variable( 'all2eGoogleSitemapSettings','Filesuffix' );
+    $sitemapName = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Filename' );
+    $sitemapSuffix = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Filesuffix' );
     $sitemapPath = $ini->variable( 'FileSettings','VarDir' );
 
     /**
      * BC: Define content tree node fetch class filter. Array of class identifiers and whether to include or exclude them.
      */
-    $classFilterType = $googlesitemapsINI->variable( 'Classes','ClassFilterType' );
-    $classFilterArray = $googlesitemapsINI->variable( 'Classes','ClassFilterArray' );
+    $classFilterType = $bcgooglesitemapsINI->variable( 'Classes','ClassFilterType' );
+    $classFilterArray = $bcgooglesitemapsINI->variable( 'Classes','ClassFilterArray' );
 }
 else
 {
@@ -79,9 +79,9 @@ else
  * which should be used to fetch content for the sitemap or the default
  * siteaccess name (one siteaccess; one language) when the custom settings are unavailable
  */
-if( $googlesitemapsINI->hasVariable( 'SiteAccessSettings', 'SiteAccessArray' ) )
+if( $bcgooglesitemapsINI->hasVariable( 'SiteAccessSettings', 'SiteAccessArray' ) )
 {
-    $siteAccessArray = $googlesitemapsINI->variable( 'SiteAccessSettings', 'SiteAccessArray' );
+    $siteAccessArray = $bcgooglesitemapsINI->variable( 'SiteAccessSettings', 'SiteAccessArray' );
 }
 else
 {
@@ -144,7 +144,7 @@ foreach( $languages as $language )
     /**
      * Prepare to create new xml document
      */
-    require_once 'extension/all2egooglesitemaps/lib/access.php';
+    require_once 'extension/bcgooglesitemaps/lib/access.php';
     $access = changeAccess( array( 'name' => $language['siteaccess'],
                                    'type' => EZ_ACCESS_TYPE_URI
                                   ) );
@@ -223,7 +223,7 @@ foreach( $nodeArray as $languageNodeArray )
          * Append to root node
          */
         $node = $root->appendChild( $node );
-    
+
         /**
          * Create new page url subnode
          */

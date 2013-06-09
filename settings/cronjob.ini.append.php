@@ -11,6 +11,6 @@ Scripts[]=generatemultilingual.php
 [CronjobSettings]
 Scripts[]=generate.php
 Scripts[]=ggeneratemultilingual.php
-ExtensionDirectories[]=all2egooglesitemaps
+ExtensionDirectories[]=bcgooglesitemaps
 
 */ ?>
