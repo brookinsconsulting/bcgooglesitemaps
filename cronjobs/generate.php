@@ -1,5 +1,15 @@
 <?php
 /**
+ * File containing the generate.php cronjob
+ *
+ * @copyright Copyright (C) 1999 - 2014 Brookins Consulting. All rights reserved.
+ * @copyright Copyright (C) 2008 all2e GmbH. All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+ * @version //autogentag//
+ * @package bcgooglesitemaps
+ */
+
+/**
  * File contains an eZ Publish cronjob part (script) to automatically
  * fetch all the content of the eZ Publish siteaccess database content
  * tree content nodes, transform the nodes fetched into an xml based
@@ -14,153 +24,261 @@
  *
  * Finally a valid xml sitemap file is written out to disk (settings based var/ dir root by default)
  *
- * File containing the bcgooglesitemaps siteaccess sitemap generator cronjob part
- *
- * @copyright Copyright (C) 1999 - 2014 Brookins Consulting. All rights reserved.
- * @copyright Copyright (C) 2008 all2e GmbH. All rights reserved.
- * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
- * @version //autogentag//
- * @package bcgooglesitemaps
  */
 
-if ( !$isQuiet )
-    $cli->output( "Generating Sitemap...\n"  );
+/**
+ * BC: In testing multi-lingual sites with single language siteaccess installations
+ * we have found it is tipically best for the cronjob mode to be disabled. Otherwise
+ * content in all possible languages is returned in subtree results.
+ */
+eZContentLanguage::clearCronjobMode();
 
-// Get a reference to eZINI. append.php will be added automatically.
+/**
+ * Get a reference to eZINI. append.php will be added automatically.
+ */
 $ini = eZINI::instance( 'site.ini' );
 $bcgooglesitemapsINI = eZINI::instance( 'bcgooglesitemaps.ini' );
 
-
-// Settings variables
+/**
+ * BC: Testing for settings required by the script and defining other variables required by the script
+ */
 if ( $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'SitemapRootNodeID' ) &&
      $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Path' ) &&
      $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Filename' ) &&
      $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Filesuffix' ) &&
+     $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'Protocol' ) &&
      $bcgooglesitemapsINI->hasVariable( 'Classes', 'ClassFilterType' ) &&
      $bcgooglesitemapsINI->hasVariable( 'Classes', 'ClassFilterArray' ) &&
-     $ini->hasVariable( 'SiteSettings','SiteURL' )
-     )
+     $ini->hasVariable( 'SiteSettings', 'SiteURL' ) &&
+     $ini->hasVariable( 'FileSettings', 'VarDir' )
+)
 {
-    $sitemapRootNodeID = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','SitemapRootNodeID' );
+    /**
+     * BC: Define root content tree node ID
+     */
+    $sitemapRootNodeID = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings', 'SitemapRootNodeID' );
 
-    $sitemapName = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Filename' );
-    $sitemapSuffix = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Filesuffix' );
-    $sitemapPath = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings','Path' );
+    /**
+     * BC: Define the sitemap basename and output file suffix
+     */
+    $sitemapName = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings', 'Filename' );
+    $sitemapSuffix = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings', 'Filesuffix' );
 
-    $classFilterType = $bcgooglesitemapsINI->variable( 'Classes','ClassFilterType' );
-    $classFilterArray = $bcgooglesitemapsINI->variable( 'Classes','ClassFilterArray' );
+    /**
+     * BC: Define the sitemap base path, output file directory path. Path to directory to write out generated sitemaps
+     */
+    if( $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings', 'Path' ) != false )
+    {
+        $sitemapPath = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings', 'Path' );
+    }
+    else
+    {
+        $sitemapPath = $ini->variable( 'FileSettings', 'VarDir' );
+    }
+
+    /**
+     * BC: Define the sitemap link protocol. Default http
+     */
+    $sitemapLinkProtocol = $bcgooglesitemapsINI->variable( 'BCGoogleSitemapSettings', 'Protocol' );
+
+    /**
+     * BC: Define content tree node fetch class filter. Array of class identifiers and whether to include or exclude them.
+     */
+    $classFilterType = $bcgooglesitemapsINI->variable( 'Classes', 'ClassFilterType' );
+    $classFilterArray = $bcgooglesitemapsINI->variable( 'Classes', 'ClassFilterArray' );
 }
 else
 {
+    /**
+     * BC: Alert user of missing ini settings variables
+     */
     $cli->output( 'Missing INI Variables in configuration block GeneralSettings.' );
     return;
 }
 
-//getting custom set site access or default access
-if ($bcgooglesitemapsINI->hasVariable( 'SiteAccessSettings', 'SiteAccessArray' ))
+/**
+ * BC: Fetch the array of siteaccess names (multi siteaccess; multi language)
+ * which should be used to fetch content for the sitemap or the default
+ * siteaccess name (one siteaccess; one language) when the custom settings are unavailable
+ */
+if( $bcgooglesitemapsINI->hasVariable( 'SiteAccessSettings', 'SiteAccessArray' ) )
 {
     $siteAccessArray = $bcgooglesitemapsINI->variable( 'SiteAccessSettings', 'SiteAccessArray' );
 }
 else
 {
-    $siteAccessArray = array($ini->variable( 'SiteSettings', 'DefaultAccess' ));
+    $siteAccessArray = array( $ini->variable( 'SiteSettings', 'DefaultAccess' ) );
 }
 
-//fetching all language codes
+/**
+ * BC: Fetching all language codes
+ */
 $languages = array();
 
-foreach($siteAccessArray as $siteAccess)
+/**
+ * BC: Iterate over each siteaccess and collect siteaccess local settings (site languages)
+ */
+foreach( $siteAccessArray as $siteAccess )
 {
-    $specificINI = eZINI::instance( 'site.ini.append.php', 'settings/siteaccess/'.$siteAccess  );
-    if ($specificINI->hasVariable( 'RegionalSettings', 'Locale' ))
+    $siteAccessINI = eZINI::instance( 'site.ini.append.php', 'settings/siteaccess/' . $siteAccess  );
+
+    if ( $siteAccessINI->hasVariable( 'RegionalSettings', 'Locale' ) )
     {
-        array_push($languages, array('siteaccess' => $siteAccess,
-                                     'locale'     => $specificINI->variable( 'RegionalSettings', 'Locale' ),
-                                     'siteurl'    => $specificINI->variable( 'SiteSettings','SiteURL' )
-                                    )
-                  );
+        array_push( $languages, array( 'siteaccess' => $siteAccess,
+                                       'locale' => $siteAccessINI->variable( 'RegionalSettings', 'Locale' ),
+                                       'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
     }
 }
 
-foreach ($languages as $language)
+/**
+ * BC: Iterate over each siteaccess locals
+ */
+foreach ( $languages as $language )
 {
+    /**
+     * BC: Alert user of the generation of the sitemap for the current language siteacces (name)
+     */
     if ( !$isQuiet )
-        $cli->output( "Generating Sitemap for Siteaccess ".$language["siteaccess"]." \n" );
+        $cli->output( "Generating sitemap for siteaccess " . $language["siteaccess"] . " \n" );
 
+    /**
+     * BC: Fetch siteaccess site url
+     */
     $siteURL = $language['siteurl'];
 
-    // Get the Sitemap's root node
+    /**
+     * Get the Sitemap's root node
+     */
     $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $language['locale'] );
 
-    if (!is_object($rootNode)) {
-        $cli->output( "Invalid SitemapRootNodeID in configuration block GeneralSettings.\n" );
+    /**
+     * Test for content object fetch (above) failure to return a valid object.
+     * Alert the user and terminate execution of script
+     */
+    if ( !is_object( $rootNode ) )
+    {
+        $cli->output( "Invalid SitemapRootNodeID in configuration block GeneralSettings; OR SitemapRootNodeID does not not have language translation for current siteaccess language.\n" );
         return;
     }
 
-    require_once "extension/bcgooglesitemaps/lib/access.php";
-    $access = changeAccess( array("name" => $language["siteaccess"],
-                                  "type" => EZ_ACCESS_TYPE_URI
-                                  ) );
+    /**
+     * Change siteaccess
+     */
+    eZSiteAccess::change( array("name" => $language["siteaccess"], "type" => eZSiteAccess::TYPE_URI ) );
 
-    // Fetch the content tree
-    $nodeArray = $rootNode->subTree( array(  'Language'         => $language['locale'],
-                                             'ClassFilterType'  => $classFilterType,
-                                             'ClassFilterArray' => $classFilterArray
-                                           )
-                                    );
+    /**
+     * Fetch the content tree nodes (children) of the above root node (in a given locale)
+     */
+    $nodeArray = $rootNode->subTree( array( 'Language' => $language['locale'],
+                                            'ClassFilterType' => $classFilterType,
+                                            'ClassFilterArray' => $classFilterArray ) );
 
+    /**
+     * Prepare new xml document
+     */
     $xmlRoot = "urlset";
     $xmlNode = "url";
 
-    // Define XML Child Nodes
-    $xmlSubNodes = array("loc","lastmod","changefreq","priority");
+    /**
+     * Define XML Child Nodes
+     */
+    $xmlSubNodes =array( 'loc', 'lastmod', 'changefreq', 'priority' );
 
-    // Create the DOMnode
-    $dom = new DOMDocument("1.0","UTF-8");
+    /**
+     * Create the DOMnode
+     */
+    $dom = new DOMDocument( '1.0', 'UTF-8' );
 
-    // Create DOM-Root (urlset)
-    $root = $dom->createElement($xmlRoot);
-    $root->setAttribute( "xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9" );
-    $root = $dom->appendChild($root);
+    /**
+     * Create DOM-Root (urlset)
+     */
+    $root = $dom->createElement( $xmlRoot );
+    $root->setAttribute( 'xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9' );
+    $root = $dom->appendChild( $root );
 
-    // Generate XML data
-    foreach ($nodeArray as $subTreeNode)
+    /**
+     * BC: Generate XML sitemap compatible data file contents
+     * based on array of arrays containing content tree nodes in each language
+     * for a given sitaccess or array of siteaccesses
+     */
+    foreach ( $nodeArray as $subTreeNode )
     {
-        // Values
-        $urlAlias = 'http://'.$siteURL.'/'.$subTreeNode->attribute( 'url_alias' );
+        /**
+         * BC: Site node url alias (calculation)
+         */
+        $urlAlias = $sitemapLinkProtocol . '://' . $siteURL . '/' . $subTreeNode->attribute( 'url_alias' );
 
+        /**
+         * BC: Fetch node's object
+         */
         $object = $subTreeNode->object();
-        //$depth = $subTreeNode->attribute( 'depth' );
-        $modified = date("c" , $object->attribute( 'modified' ));
 
-        // Create new url element
-        $node = $dom->createElement($xmlNode);
-        // append to root node
-        $node = $root->appendChild($node);
+        /**
+         * $depth = $subTreeNode->attribute( 'depth' );
+         */
 
-        // create new url subnode
-        $subNode = $dom->createElement($xmlSubNodes[0]);
-        $subNode = $node->appendChild($subNode);
-        // set text node with data
-        $date = $dom->createTextNode($urlAlias);
-        $date = $subNode->appendChild($date);
+        /**
+         * BC: Fetch object's modified date
+         */
+        $modified = date( "c" , $object->attribute( 'modified' ) );
 
-        // create modified subnode
-        $subNode = $dom->createElement($xmlSubNodes[1]);
-        $subNode = $node->appendChild($subNode);
-        // set data
-        $lastmod = $dom->createTextNode($modified);
-        $lastmod = $subNode->appendChild($lastmod);
+        /**
+         * Create new url element
+         */
+        $node = $dom->createElement( $xmlNode );
+
+        /**
+         * Append to root node
+         */
+        $node = $root->appendChild( $node );
+
+        /**
+         * Create new page url subnode
+         */
+        $subNode = $dom->createElement( $xmlSubNodes[0] );
+        $subNode = $node->appendChild( $subNode );
+
+        /**
+         * Set text node with data
+         */
+        $date = $dom->createTextNode( $urlAlias );
+        $date = $subNode->appendChild( $date );
+
+        /**
+         * BC: Create 'modified' subnode and append child data to xml document being generated
+         */
+        $subNode = $dom->createElement( $xmlSubNodes[1] );
+        $subNode = $node->appendChild( $subNode );
+
+        /**
+         * BC: Create 'lastmod' node and append child data to the xml document being generated
+         */
+        $lastmod = $dom->createTextNode( $modified );
+        $lastmod = $subNode->appendChild( $lastmod );
 
     }
-    // write XML Sitemap to file
-    $xmlDataFile = $sitemapPath.$sitemapName.'_'.$language['siteaccess'].$sitemapSuffix;
-    $dom->save($xmlDataFile);
 
+    /**
+     * BC: Build output xml data file name
+     */
+    $xmlDataFile = $sitemapPath . '/' . $sitemapName . '_' . $language['siteaccess'] . $sitemapSuffix;
+
+    /**
+     * BC: Write sitemap xml file to disk
+     */
+    $dom->save( $xmlDataFile );
+
+    /**
+     * BC: Alert user of script completion
+     */
     if ( !$isQuiet )
     {
-        $cli->output( "Sitemap for site access ".$language['siteaccess']." (language code ".$language['locale'].") has been generated!\n\n" );
+        $cli->output( "Sitemap for siteaccess " . $language['siteaccess'] . " (Language code " . $language['locale'] . ") has been generated. See: $xmlDataFile\n\n" );
     }
 }
+
+/**
+ * Terminate execution and exit system normally
+ */
 
 ?>
