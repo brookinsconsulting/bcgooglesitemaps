@@ -57,9 +57,9 @@ Introduction
 
    o  eZ Publish version:
 
-      Make sure you use eZ Publish version 4.x (required) or higher.
+      Make sure you use eZ Publish version 5.x (required) or higher.
 
-      eZ Publish 4.6.x+ (Community Build, 2012.03+) is recommended.
+      eZ Publish 4.6.x+ (Community Build, 2014.07+) is recommended.
 
    o  PHP version:
 
@@ -100,10 +100,10 @@ Installing BC Google Sitemaps extension
    necessary is depends on the file you downloaded.
 
    [tar.gz]
-   tar -zxvf bcgooglesitemaps-1_1_0.tar.gz
+   tar -zxvf bcgooglesitemaps-1_1_3.tar.gz
 
    [zip]
-   unzip bcgooglesitemaps-1_1_0.tar.zip
+   unzip bcgooglesitemaps-1_1_3.tar.zip
 
 
 3. (Optional) Git clone the latest GitHub brookinsconsulting bcgooglesitemaps extension sources into the extension directory
@@ -209,7 +209,7 @@ php bin/php/ezpgenerateautoloads.php -v -e;
 
     or
 
-    RewriteRule ^sitemap[^/]+.xml /var/sitemap[^/]+.xml [L]
+    RewriteRule ^sitemap[^/]+.xml /var/siteaccessname/sitemap[^/]+.xml [L]
 
     Please note that this line has changed in this release. If you are using a previuous release, than you might need to change it.
 
@@ -359,10 +359,12 @@ You can optionally skip the cronjob based sitemap generator and use the module v
 
     set include to include objects of classes listed in Class_Filter_Array
     set exclude to exclude objects of classes listed in Class_Filter_Array
+
     [Classes]
     ClassFilterType=include
 
     setting array to include/exclude classes in sitemap
+
     ClassFilterArray[]
     ClassFilterArray[]=folder
     ClassFilterArray[]=article
@@ -370,6 +372,7 @@ You can optionally skip the cronjob based sitemap generator and use the module v
 
     set true to include only main node of content object in sitemap
     set false to include all nodes of content object in sitemap
+
     [NodeSettings]
     MainNodeOnly=true|false
 

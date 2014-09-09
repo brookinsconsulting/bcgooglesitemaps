@@ -24,7 +24,7 @@ to generate the sitemap using the runcronjobs.php script.
 
 This will create a file for every siteaccess within your eZ Publish root directory.
 
-These files are usually named "sitemap_access.xml", but you can change that in the INI file.
+These files are usually named "sitemap_siteaccessname.xml", but you can change that in the INI file.
 
 
 3. Running the googlesitemapsmultilingual cronjob part googlesitemaps
@@ -44,7 +44,7 @@ Alternatively you can use the googlesitemapsmultilingual cronjob part
 
 This will create a single file with the content of all site languages within your eZ Publish var directory (not root).
 
-These files are usually named "sitemap_access.xml", but you can change that in the INI file.
+These files are usually named "sitemap_siteaccessname.xml", but you can change that in the INI file.
 
 
 4. Optional extension settings

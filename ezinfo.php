@@ -2,7 +2,7 @@
 /**
  * File containing the bcgooglesitemaps copyright information file
  *
- * @copyright Copyright (C) 1999 - 2013 Brookins Consutling, 2008 all2e GmbH and 2008 MEDIATA Communications GmbH. All rights reserved.
+ * @copyright Copyright (C) 1999 - 2014 Brookins Consutling, 2008 all2e GmbH and 2008 MEDIATA Communications GmbH. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
  * @version //autogentag//
  * @package bcgooglesitemaps
@@ -12,10 +12,11 @@ class bcGoogleSitemapsInfo
 {
     function info()
     {
-        return array( 'Name' => "BC Google Sitemaps",
-                      'Version' => "1.1.2",
-                      'Copyright' => "Copyright (C) 1999 - 2013 <a href='http://brookinsconsulting.com' title='Brookins Consulting'>Brookins Consulting</a>, 2008 <a href='http:www.all2e.com' title='all2e GmbH'>all2e GmbH</a> and 2008 <a href='http://www.mediata.net' title='MEDIATA Communications GmbH'>MEDIATA Communications GmbH</a>",
-                      'License' => "GNU General Public License v2.0"
+        return array( 'Name' => "<a href='http://projects.ez.no/bcgooglesitemaps'>BC Google Sitemaps</a>",
+                      'Version' => "1.1.3",
+                      'Copyright' => "Copyright (C) 1999 - 2014 <a href='http://brookinsconsulting.com' title='Brookins Consulting'>Brookins Consulting</a>, 2008 <a href='http:www.all2e.com' title='all2e GmbH'>all2e GmbH</a> and 2008 <a href='http://www.mediata.net' title='MEDIATA Communications GmbH'>MEDIATA Communications GmbH</a>",
+                      'License' => "GNU General Public License v2.0",
+                      'info_url' => "https://github.com/brookinsconsulting/bcgooglesitemaps"
                     );
     }
 }
