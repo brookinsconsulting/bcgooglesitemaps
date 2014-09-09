@@ -10,7 +10,7 @@ Scripts[]=generatemultilingual.php
 
 [CronjobSettings]
 Scripts[]=generate.php
-Scripts[]=ggeneratemultilingual.php
+Scripts[]=generatemultilingual.php
 ExtensionDirectories[]=bcgooglesitemaps
 
 */ ?>
