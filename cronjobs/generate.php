@@ -111,9 +111,9 @@ else
 }
 
 /**
- * BC: Fetching all language codes
+ * BC: Array to store all siteacces related information
  */
-$languages = array();
+$siteaccesses = array();
 
 /**
  * BC: Iterate over each siteaccess and collect siteaccess local settings (site languages)
@@ -121,35 +121,51 @@ $languages = array();
 foreach( $siteAccessArray as $siteAccess )
 {
     $siteAccessINI = eZINI::instance( 'site.ini.append.php', 'settings/siteaccess/' . $siteAccess  );
+    $siteacessLocale = $siteAccessINI->variable( 'RegionalSettings', 'Locale' );
 
-    if ( $siteAccessINI->hasVariable( 'RegionalSettings', 'Locale' ) )
+    if ( $siteAccessINI->hasVariable( 'RegionalSettings', 'SiteLanguageList' ) )
     {
-        array_push( $languages, array( 'siteaccess' => $siteAccess,
-                                       'locale' => $siteAccessINI->variable( 'RegionalSettings', 'Locale' ),
-                                       'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
+        $siteaccessLanguages = $siteAccessINI->variable( 'RegionalSettings', 'SiteLanguageList' );
+
+        if( !in_array( $siteacessLocale, $siteaccessLanguages ) )
+        {
+            array_push( $siteacessLocale, $siteaccessLanguages );
+        }
+
+        array_push( $siteaccesses, array( 'siteaccess' => $siteAccess,
+                                          'locale' => $siteacessLocale,
+                                          'siteaccessLanguages' => $siteaccessLanguages,
+                                          'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
+    }
+    else
+    {
+        array_push( $siteaccesses, array( 'siteaccess' => $siteAccess,
+                                          'locale' => $siteacessLocale,
+                                          'siteaccessLanguages' => array( $siteacessLocale ),
+                                          'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
     }
 }
 
 /**
- * BC: Iterate over each siteaccess locals
+ * BC: Iterate over each siteaccess language
  */
-foreach ( $languages as $language )
+foreach ( $siteaccesses as $siteaccess )
 {
     /**
      * BC: Alert user of the generation of the sitemap for the current language siteacces (name)
      */
     if ( !$isQuiet )
-        $cli->output( "Generating sitemap for siteaccess " . $language["siteaccess"] . " \n" );
+        $cli->output( "Generating sitemap for siteaccess " . $siteaccess["siteaccess"] . " \n" );
 
     /**
      * BC: Fetch siteaccess site url
      */
-    $siteURL = $language['siteurl'];
+    $siteURL = $siteaccess['siteurl'];
 
     /**
      * Get the Sitemap's root node
      */
-    $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $language['locale'] );
+    $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $siteaccess['locale'] );
 
     /**
      * Test for content object fetch (above) failure to return a valid object.
@@ -164,12 +180,12 @@ foreach ( $languages as $language )
     /**
      * Change siteaccess
      */
-    eZSiteAccess::change( array("name" => $language["siteaccess"], "type" => eZSiteAccess::TYPE_URI ) );
+    eZSiteAccess::change( array("name" => $siteaccess["siteaccess"], "type" => eZSiteAccess::TYPE_URI ) );
 
     /**
      * Fetch the content tree nodes (children) of the above root node (in a given locale)
      */
-    $nodeArray = $rootNode->subTree( array( 'Language' => $language['locale'],
+    $nodeArray = $rootNode->subTree( array( 'Language' => $siteaccess['siteaccessLanguages'],
                                             'ClassFilterType' => $classFilterType,
                                             'ClassFilterArray' => $classFilterArray ) );
 
@@ -255,13 +271,12 @@ foreach ( $languages as $language )
          */
         $lastmod = $dom->createTextNode( $modified );
         $lastmod = $subNode->appendChild( $lastmod );
-
     }
 
     /**
      * BC: Build output xml data file name
      */
-    $xmlDataFile = $sitemapPath . '/' . $sitemapName . '_' . $language['siteaccess'] . $sitemapSuffix;
+    $xmlDataFile = $sitemapPath . '/' . $sitemapName . '_' . $siteaccess['siteaccess'] . $sitemapSuffix;
 
     /**
      * BC: Write sitemap xml file to disk
@@ -273,7 +288,7 @@ foreach ( $languages as $language )
      */
     if ( !$isQuiet )
     {
-        $cli->output( "Sitemap for siteaccess " . $language['siteaccess'] . " (Language code " . $language['locale'] . ") has been generated. See: $xmlDataFile\n\n" );
+        $cli->output( "Sitemap for siteaccess " . $siteaccess['siteaccess'] . " has been generated. Using languages: " . implode( ', ', $siteaccess['siteaccessLanguages'] ) . ". See: $xmlDataFile\n\n" );
     }
 }
 

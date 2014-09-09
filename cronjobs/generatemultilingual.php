@@ -113,9 +113,9 @@ else
 }
 
 /**
- * BC: Fetching all language codes
+ * BC: Array to store all siteacces related information
  */
-$languages = array();
+$siteaccesses = array();
 
 /**
  * BC: Iterate over each siteaccess and collect siteaccess local settings (site languages)
@@ -123,12 +123,28 @@ $languages = array();
 foreach( $siteAccessArray as $siteAccess )
 {
     $siteAccessINI = eZINI::instance( 'site.ini.append.php', 'settings/siteaccess/' . $siteAccess  );
+    $siteacessLocale = $siteAccessINI->variable( 'RegionalSettings', 'Locale' );
 
-    if ( $siteAccessINI->hasVariable( 'RegionalSettings', 'Locale' ) )
+    if ( $siteAccessINI->hasVariable( 'RegionalSettings', 'SiteLanguageList' ) )
     {
-        array_push( $languages, array( 'siteaccess' => $siteAccess,
-                                       'locale' => $siteAccessINI->variable( 'RegionalSettings', 'Locale' ),
-                                       'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
+        $siteaccessLanguages = $siteAccessINI->variable( 'RegionalSettings', 'SiteLanguageList' );
+
+        if( !in_array( $siteacessLocale, $siteaccessLanguages ) )
+        {
+            array_push( $siteacessLocale, $siteaccessLanguages );
+        }
+
+        array_push( $siteaccesses, array( 'siteaccess' => $siteAccess,
+                                          'locale' => $siteacessLocale,
+                                          'siteaccessLanguages' => $siteaccessLanguages,
+                                          'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
+    }
+    else
+    {
+        array_push( $siteaccesses, array( 'siteaccess' => $siteAccess,
+                                          'locale' => $siteacessLocale,
+                                          'siteaccessLanguages' => array( $siteacessLocale ),
+                                          'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
     }
 }
 
@@ -140,23 +156,23 @@ $nodeArray = array();
 /**
  * BC: Iterate over each siteaccess locals
  */
-foreach( $languages as $language )
+foreach( $siteaccesses as $siteaccess )
 {
     /**
      * BC: Alert user of the generation of the sitemap for the current language siteacces (name)
      */
     if ( !$isQuiet )
-        $cli->output( "Generating sitemap content for siteaccess " . $language["siteaccess"] . " \n" );
+        $cli->output( "Generating sitemap content for siteaccess " . $siteaccess["siteaccess"] . " \n" );
 
     /**
      * BC: Fetch siteaccess site url
      */
-    $siteURL = $language['siteurl'];
+    $siteURL = $siteaccess['siteurl'];
 
     /**
      * Get the Sitemap's root node
      */
-    $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $language['locale'] );
+    $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $siteaccess['locale'] );
 
     /**
      * Test for content object fetch (above) failure to return a valid object.
@@ -171,21 +187,20 @@ foreach( $languages as $language )
     /**
      * Change siteaccess
      */
-    eZSiteAccess::change( array("name" => $language["siteaccess"], "type" => eZSiteAccess::TYPE_URI ) );
+    eZSiteAccess::change( array("name" => $siteaccess["siteaccess"], "type" => eZSiteAccess::TYPE_URI ) );
 
     /**
      * Fetch the content tree nodes (children) of the above root node (in a given locale)
      */
-    $nodeArray[] = $rootNode->subTree( array( 'Language' => $language['locale'],
+    $nodeArray[] = $rootNode->subTree( array( 'Language' => $siteaccess['siteaccessLanguages'],
                                               'ClassFilterType' => $classFilterType,
                                               'ClassFilterArray' => $classFilterArray ) );
 
-} // BC: End foreach( $languages as $language )
+} // BC: End foreach( $siteaccesses as $siteaccess )
 
 /**
  * Prepare new xml document
  */
-
 $xmlRoot = "urlset";
 $xmlNode = "url";
 
@@ -211,12 +226,12 @@ $root = $dom->appendChild( $root );
  * based on array of arrays containing content tree nodes in each language
  * for a given sitaccess or array of siteaccesses
  */
-foreach( $nodeArray as $languageNodeArray )
+foreach( $nodeArray as $siteaccessNodeArray )
 {
     /**
-     * BC: Iterate over language
+     * BC: Iterate over siteaccess language nodes
      */
-    foreach( $languageNodeArray as $subTreeNode )
+    foreach( $siteaccessNodeArray as $subTreeNode )
     {
         /**
          * BC: Site node url alias (calculation)
