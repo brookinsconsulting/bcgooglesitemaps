@@ -161,6 +161,9 @@ foreach ( $siteaccesses as $siteaccess )
      * BC: Fetch siteaccess site url
      */
     $siteURL = $siteaccess['siteurl'];
+    if( substr( $siteURL, -1) != '/' ) {
+        $siteURL .= '/';
+    }
 
     /**
      * Get the Sitemap's root node
@@ -222,7 +225,7 @@ foreach ( $siteaccesses as $siteaccess )
         /**
          * BC: Site node url alias (calculation)
          */
-        $urlAlias = $sitemapLinkProtocol . '://' . $siteURL . '/' . $subTreeNode->attribute( 'url_alias' );
+        $urlAlias = $sitemapLinkProtocol . '://' . $siteURL . $subTreeNode->attribute( 'url_alias' );
 
         /**
          * BC: Fetch node's object
