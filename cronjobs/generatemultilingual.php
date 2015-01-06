@@ -239,7 +239,7 @@ foreach( $nodeArray as $siteaccessNodeArray )
         /**
          * BC: Site node url alias (calculation)
          */
-        $urlAlias = $sitemapLinkProtocol . $siteURL . $subTreeNode->attribute( 'url_alias' );
+        $urlAlias = $sitemapLinkProtocol . '://' . $siteURL . $subTreeNode->attribute( 'url_alias' );
 
         /**
          * BC: Fetch node's object
