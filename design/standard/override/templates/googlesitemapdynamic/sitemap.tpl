@@ -37,7 +37,7 @@
 {if is_set( $subtree_change_freq_list[$node.node_id] )}
     {def $cur_subtree_change_freq=$subtree_change_freq_list[$node.node_id]
          $output_change_freq=$subtree_change_freq_list[$node.node_id]}
-{elseif and( ne( $cur_subtree_change_freq, null ), is_set( $cur_subtree_change_freq ) )}
+{elseif and( is_set( $cur_subtree_change_freq ) , ne( $cur_subtree_change_freq, null ) )}
     {def $output_change_freq=$cur_subtree_change_freq}
 {elseif is_set( $subtree_change_freq_modified[$node.node_id] )}
     {def $output_change_freq=$standard_change_freq
@@ -75,7 +75,7 @@
              {/if}
     {/foreach}
     {def $cur_subtree_change_freq_modified=$output_change_freq}
-{elseif and( ne( $cur_subtree_change_freq_modified, null ), is_set( $cur_subtree_change_freq_modified ) )}
+{elseif and( is_set( $cur_subtree_change_freq_modified ) , ne( $cur_subtree_change_freq_modified, null ) )}
     {def $output_change_freq=$cur_subtree_change_freq_modified}
 {/if}
 {if not( is_set( $output_change_freq ) )}
@@ -108,7 +108,7 @@
 {if is_set( $subtree_priority_list[$node.node_id] )}
     {def $cur_subtree_priority=$subtree_priority_list[$node.node_id]
          $output_priority=$subtree_priority_list[$node.node_id]}
-{elseif and( ne( $cur_subtree_priority, null ), is_set( $cur_subtree_priority ) )}
+{elseif and( is_set( $cur_subtree_priority ) , ne( $cur_subtree_priority, null ) )}
     {def $output_priority=$cur_subtree_priority}
 {elseif is_set( $subtree_priority_modified[$node.node_id] )}
     {def $output_priority=$standard_priority
@@ -146,7 +146,7 @@
              {/if}
     {/foreach}
     {def $cur_subtree_priority_modified=$output_priority}
-{elseif and( ne( $cur_subtree_priority_modified, null ), is_set( $cur_subtree_priority_modified ) )}
+{elseif and( is_set( $cur_subtree_priority_modified ) , ne( $cur_subtree_priority_modified, null ) )}
     {def $output_priority=$cur_subtree_priority_modified}
 {/if}
 {if not( is_set( $output_priority ) )}
@@ -179,7 +179,7 @@
 {if is_set( $subtree_visibility_list[$node.node_id] )}
     {def $cur_subtree_visibility=$subtree_visibility_list[$node.node_id]
          $output_visibility=$subtree_visibility_list[$node.node_id]}
-{elseif and( ne( $cur_subtree_visibility, null ), is_set( $cur_subtree_visibility ) )}
+{elseif and( is_set( $cur_subtree_visibility ) , ne( $cur_subtree_visibility, null ) )}
     {def $output_visibility=$cur_subtree_visibility}
 {else}
     {def $output_visibility='show'}
