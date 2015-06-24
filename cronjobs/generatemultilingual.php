@@ -149,10 +149,33 @@ foreach( $siteAccessArray as $siteAccess )
 }
 
 /**
- * BC: Preparing to fetch all content tree nodes by each language (Settings based locale)
+ * Prepare new xml document
  */
-$nodeArray = array();
+$xmlRoot = "urlset";
+$xmlNode = "url";
 
+/**
+ * Define XML Child Nodes
+ */
+$xmlSubNodes = array( 'loc', 'lastmod', 'changefreq', 'priority' );
+
+/**
+ * Create the DOMnode
+ */
+$dom = new DOMDocument( '1.0', 'UTF-8' );
+
+/**
+ * Create DOM-Root (urlset)
+ */
+$root = $dom->createElement( $xmlRoot );
+$root->setAttribute( 'xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9' );
+$root = $dom->appendChild( $root );
+
+/**
+ * BC: Generate XML sitemap compatible data file contents
+ * based on array of arrays containing content tree nodes in each language
+ * for a given sitaccess or array of siteaccesses
+ */
 /**
  * BC: Iterate over each siteaccess locals
  */
@@ -195,42 +218,10 @@ foreach( $siteaccesses as $siteaccess )
     /**
      * Fetch the content tree nodes (children) of the above root node (in a given locale)
      */
-    $nodeArray[] = $rootNode->subTree( array( 'Language' => $siteaccess['siteaccessLanguages'],
+    $siteaccessNodeArray = $rootNode->subTree( array( 'Language' => $siteaccess['siteaccessLanguages'],
                                               'ClassFilterType' => $classFilterType,
                                               'ClassFilterArray' => $classFilterArray ) );
 
-} // BC: End foreach( $siteaccesses as $siteaccess )
-
-/**
- * Prepare new xml document
- */
-$xmlRoot = "urlset";
-$xmlNode = "url";
-
-/**
- * Define XML Child Nodes
- */
-$xmlSubNodes = array( 'loc', 'lastmod', 'changefreq', 'priority' );
-
-/**
- * Create the DOMnode
- */
-$dom = new DOMDocument( '1.0', 'UTF-8' );
-
-/**
- * Create DOM-Root (urlset)
- */
-$root = $dom->createElement( $xmlRoot );
-$root->setAttribute( 'xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9' );
-$root = $dom->appendChild( $root );
-
-/**
- * BC: Generate XML sitemap compatible data file contents
- * based on array of arrays containing content tree nodes in each language
- * for a given sitaccess or array of siteaccesses
- */
-foreach( $nodeArray as $siteaccessNodeArray )
-{
     /**
      * BC: Iterate over siteaccess language nodes
      */
@@ -289,7 +280,7 @@ foreach( $nodeArray as $siteaccessNodeArray )
         $lastmod = $dom->createTextNode( $modified );
         $lastmod = $subNode->appendChild( $lastmod );
     }
-}
+} // BC: End foreach( $siteaccesses as $siteaccess )
 
 /**
  * BC: Build output xml data file name
