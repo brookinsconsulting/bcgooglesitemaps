@@ -2,12 +2,17 @@
 /**
  * File containing the generatemultilingual.php cronjob
  *
- * @copyright Copyright (C) 1999 - 2014 Brookins Consulting. All rights reserved.
+ * @copyright Copyright (C) 1999 - 2016 Brookins Consulting. All rights reserved.
  * @copyright Copyright (C) 2008 all2e GmbH. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
  * @version //autogentag//
  * @package bcgooglesitemaps
  */
+
+/**
+ * Add a starting timing point tracking script execution time
+ */
+$srcStartTime = microtime( true );
 
 /**
  * File contains an eZ Publish cronjob part (script) to automatically
@@ -117,14 +122,88 @@ else
  */
 $siteaccesses = array();
 
+/** Display of execution time **/
+
+function executionTimeDisplay( $srcStartTime, $cli, $isQuiet )
+{
+    /** Add a stoping timing point tracking and calculating total script execution time **/
+    $srcStopTime = microtime( true );
+    $startTimeCalc = $srcStartTime;
+    $stopTimeCalc = $srcStopTime;
+
+    /** Calculate execution time **/
+    $executionTime = $srcStopTime - $srcStartTime;
+    list( $executionTimeInSeconds, $executionTimeInUSeconds ) = explode('.', $executionTime );
+    $executionTimeInUSeconds = str_replace( "0.", ".", $executionTimeInUSeconds );
+    $executionTimeInUSecondsRounded = round( $executionTimeInUSeconds, 2 );
+
+    /** Get and set timezone setting for time calculation date format display **/
+    $previousTimeZone = date_default_timezone_get();
+    date_default_timezone_set( 'UTC' );
+
+    /** Format calculated execution time **/
+    $executionTimeFormattedInHours = date( "H \\h\\o\\u\\r\\s", $executionTimeInSeconds );
+    $executionTimeFormattedInMinutes = date( "i \m\i\\n\u\\t\\e\\s", $executionTimeInSeconds );
+    $executionTimeFormattedInSeconds = date( "s \\s\\e\\c\\o\\n\\d\\s", $executionTimeInSeconds );
+
+    /** Restore previous timezone setting **/
+    date_default_timezone_set( $previousTimeZone );
+
+    /** Trim formatted calculated execution time **/
+    if( $executionTimeFormattedInHours > 0 )
+    {
+        $executionTimeFormattedInHours = ltrim( $executionTimeFormattedInHours, 0 );
+    }
+    if( $executionTimeFormattedInMinutes > 0 )
+    {
+        $executionTimeFormattedInMinutes = ltrim( $executionTimeFormattedInMinutes, 0 );
+    }
+    if( $executionTimeFormattedInSeconds > 0 )
+    {
+        $executionTimeFormattedInSeconds = ltrim( $executionTimeFormattedInSeconds, 0 );
+    }
+
+    /** Alert the user to how long the script execution took place **/
+    if ( !$isQuiet )
+    {
+        if( $executionTimeInSeconds <= 60 )
+        {
+            $cli->output( "This script execution completed in " . $executionTimeFormattedInSeconds . ".\n" );
+        }
+        elseif( $executionTimeInSeconds < 3600 )
+        {
+            $cli->output( "This script execution completed in " . $executionTimeFormattedInMinutes . ' and ' . $executionTimeFormattedInSeconds . " \n" );
+        }
+        elseif( $executionTimeInSeconds >= 3600 )
+        {
+            $cli->output( "This script execution completed in " . $executionTimeFormattedInHours . ', ' . $executionTimeFormattedInMinutes . ' and ' . $executionTimeFormattedInSeconds . " \n" );
+        }
+    }
+}
+
 /**
  * BC: Iterate over each siteaccess and collect siteaccess local settings (site languages)
  */
 foreach( $siteAccessArray as $siteAccess )
 {
+    /**
+     * BC: Fetch siteaccess settings and locale
+     */
     $siteAccessINI = eZINI::instance( 'site.ini.append.php', 'settings/siteaccess/' . $siteAccess  );
     $siteacessLocale = $siteAccessINI->variable( 'RegionalSettings', 'Locale' );
 
+    /**
+     * BC: Fetch siteaccess site url
+     */
+    $siteURL = $siteAccessINI->variable( 'SiteSettings', 'SiteURL' );
+
+    if( substr( $siteURL, -1) != '/' ) {
+        $siteURL .= '/';
+    }
+
+    /**
+     * BC: Fetch siteaccess site languages list and build array of siteaccess specific settings
+     */
     if ( $siteAccessINI->hasVariable( 'RegionalSettings', 'SiteLanguageList' ) )
     {
         $siteaccessLanguages = $siteAccessINI->variable( 'RegionalSettings', 'SiteLanguageList' );
@@ -137,69 +216,16 @@ foreach( $siteAccessArray as $siteAccess )
         array_push( $siteaccesses, array( 'siteaccess' => $siteAccess,
                                           'locale' => $siteacessLocale,
                                           'siteaccessLanguages' => $siteaccessLanguages,
-                                          'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
+                                          'siteurl' => $siteURL ) );
     }
     else
     {
         array_push( $siteaccesses, array( 'siteaccess' => $siteAccess,
                                           'locale' => $siteacessLocale,
                                           'siteaccessLanguages' => array( $siteacessLocale ),
-                                          'siteurl' => $siteAccessINI->variable( 'SiteSettings', 'SiteURL' ) ) );
+                                          'siteurl' => $siteURL ) );
     }
 }
-
-/**
- * BC: Preparing to fetch all content tree nodes by each language (Settings based locale)
- */
-$nodeArray = array();
-
-/**
- * BC: Iterate over each siteaccess locals
- */
-foreach( $siteaccesses as $siteaccess )
-{
-    /**
-     * BC: Alert user of the generation of the sitemap for the current language siteacces (name)
-     */
-    if ( !$isQuiet )
-        $cli->output( "Generating sitemap content for siteaccess " . $siteaccess["siteaccess"] . " \n" );
-
-    /**
-     * BC: Fetch siteaccess site url
-     */
-    $siteURL = $siteaccess['siteurl'];
-    if( substr( $siteURL, -1) != '/' ) {
-        $siteURL .= '/';
-    }
-
-    /**
-     * Get the Sitemap's root node
-     */
-    $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $siteaccess['locale'] );
-
-    /**
-     * Test for content object fetch (above) failure to return a valid object.
-     * Alert the user and terminate execution of script
-     */
-    if ( !is_object( $rootNode ) )
-    {
-        $cli->output( "Invalid SitemapRootNodeID in configuration block GeneralSettings; OR SitemapRootNodeID does not not have language translation for current siteaccess language.\n" );
-        return;
-    }
-
-    /**
-     * Change siteaccess
-     */
-    eZSiteAccess::change( array("name" => $siteaccess["siteaccess"], "type" => eZSiteAccess::TYPE_URI ) );
-
-    /**
-     * Fetch the content tree nodes (children) of the above root node (in a given locale)
-     */
-    $nodeArray[] = $rootNode->subTree( array( 'Language' => $siteaccess['siteaccessLanguages'],
-                                              'ClassFilterType' => $classFilterType,
-                                              'ClassFilterArray' => $classFilterArray ) );
-
-} // BC: End foreach( $siteaccesses as $siteaccess )
 
 /**
  * Prepare new xml document
@@ -225,20 +251,61 @@ $root->setAttribute( 'xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9' );
 $root = $dom->appendChild( $root );
 
 /**
- * BC: Generate XML sitemap compatible data file contents
- * based on array of arrays containing content tree nodes in each language
- * for a given sitaccess or array of siteaccesses
+ * BC: Iterate over each siteaccess locals
  */
-foreach( $nodeArray as $siteaccessNodeArray )
+foreach( $siteaccesses as $key => $siteaccess )
 {
+    /**
+     * BC: Alert user of the generation of the sitemap for the current language siteacces (name)
+     */
+    if ( !$isQuiet )
+        $cli->output( "Generating sitemap content for siteaccess " . $siteaccess["siteaccess"] . " with locale " . implode( ', ', $siteaccess['siteaccessLanguages'] ) . " \n" );
+
+    /**
+     * Get the Sitemap's root node
+     */
+    $rootNode = eZContentObjectTreeNode::fetch( $sitemapRootNodeID, $siteaccess['locale'] );
+    $siteaccessNodesArray[] = $rootNode;
+
+    /**
+     * Test for content object fetch (above) failure to return a valid object.
+     * Alert the user and terminate execution of script
+     */
+    if ( !is_object( $rootNode ) )
+    {
+        $cli->output( "Invalid SitemapRootNodeID in configuration block GeneralSettings; OR SitemapRootNodeID does not not have language translation for current siteaccess language.\n" );
+        return;
+    }
+
+    /**
+     * Change siteaccess
+     */
+    eZSiteAccess::change( array("name" => $siteaccess["siteaccess"], "type" => eZSiteAccess::TYPE_URI ) );
+
+    /**
+     * Fetch the content tree nodes (children) of the above root node (in a given locale)
+     */
+    $siteaccessSubtreeNodesArray = $rootNode->subTree( array( 'Language' => $siteaccess['siteaccessLanguages'],
+                                                              'ClassFilterType' => $classFilterType,
+                                                              'ClassFilterArray' => $classFilterArray ) );
+
+    $siteaccessNodesArray = array_merge( $siteaccessNodesArray, $siteaccessSubtreeNodesArray );
+
+    /**
+     * BC: Generate XML sitemap compatible data file contents
+     * based on array of arrays containing content tree nodes
+     * in each language for a given sitaccess or array of siteaccesses
+    */
+
     /**
      * BC: Iterate over siteaccess language nodes
      */
-    foreach( $siteaccessNodeArray as $subTreeNode )
+    foreach( $siteaccessNodesArray as $subTreeNode )
     {
         /**
          * BC: Site node url alias (calculation)
          */
+        $siteURL = $siteaccesses[ $key ]['siteurl'];
         $urlAlias = $sitemapLinkProtocol . '://' . $siteURL . $subTreeNode->attribute( 'url_alias' );
 
         /**
@@ -289,7 +356,8 @@ foreach( $nodeArray as $siteaccessNodeArray )
         $lastmod = $dom->createTextNode( $modified );
         $lastmod = $subNode->appendChild( $lastmod );
     }
-}
+} // BC: End foreach( $siteaccesses as $siteaccess )
+
 
 /**
  * BC: Build output xml data file name
@@ -309,8 +377,12 @@ if ( !$isQuiet )
     /**
      * @TODO: Extend message displayed to include more details of the content and context of the results written to disk
      */
-    $cli->output( "Sitemap for site has been generated. See: $xmlDataFile\n\n" );
+    $cli->output( "Sitemap for site has been generated. See: $xmlDataFile\n" );
 }
+
+/** Call for display of execution time **/
+
+executionTimeDisplay( $srcStartTime, $cli, $isQuiet );
 
 /**
  * Terminate execution and exit system normally
