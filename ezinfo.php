@@ -10,7 +10,7 @@
 
 class bcGoogleSitemapsInfo
 {
-    function info()
+    public static function info()
     {
         return array( 'Name' => "<a href='http://projects.ez.no/bcgooglesitemaps'>BC Google Sitemaps</a>",
                       'Version' => "1.1.3",
