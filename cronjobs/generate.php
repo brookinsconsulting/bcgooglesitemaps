@@ -86,6 +86,11 @@ if ( $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'SitemapRootN
      */
     $classFilterType = $bcgooglesitemapsINI->variable( 'Classes', 'ClassFilterType' );
     $classFilterArray = $bcgooglesitemapsINI->variable( 'Classes', 'ClassFilterArray' );
+
+    /**
+     * BC: Define content tree node iteration node_id exclusion filter. Array of node_ids to exclude.
+     */
+    $excludeNodeIDs = $bcgooglesitemapsINI->variable( 'NodeSettings', 'ExcludedNodeIDs' );
 }
 else
 {
@@ -226,6 +231,20 @@ foreach ( $siteaccesses as $siteaccess )
          * BC: Site node url alias (calculation)
          */
         $urlAlias = $sitemapLinkProtocol . '://' . $siteURL . $subTreeNode->attribute( 'url_alias' );
+
+        /**
+         * BC: node_id exclusion (calculation)
+         */
+        $nodeID = $subTreeNode->attribute( 'node_id' );
+        $nodeIDPath = $subTreeNode->attribute( 'path_string' );
+
+        /**
+         * BC: Test for exclude nodes
+         */
+         if ( in_array( $nodeID, $excludeNodeIDs ) || str_contains( $nodeIDPath, implode( $excludeNodeIDs ) ) )
+         {
+             continue;
+         }
 
         /**
          * BC: Fetch node's object
