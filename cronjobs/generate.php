@@ -26,6 +26,16 @@
  *
  */
 
+
+/**
+ * Test to replace php8 only function in php7
+ */
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
+
 /**
  * BC: In testing multi-lingual sites with single language siteaccess installations
  * we have found it is tipically best for the cronjob mode to be disabled. Otherwise
