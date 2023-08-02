@@ -304,6 +304,10 @@ foreach ( $siteaccesses as $siteaccess )
         $lastmod = $dom->createTextNode( $modified );
         $lastmod = $subNode->appendChild( $lastmod );
     }
+    
+    // Remove old variables to release memory
+    unset($nodeArray);
+    eZContentObject::clearCache();
 
     /**
      * BC: Build output xml data file name
