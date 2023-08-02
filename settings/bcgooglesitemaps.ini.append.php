@@ -4,7 +4,7 @@
 # Content subtree NodeID to include in sitemap content
 SitemapRootNodeID=2
 # Sitemap link default protocol
-Protocol=http
+Protocol=https
 # Sitemap XML file name prefix
 Filename=sitemap
 # Sitemap XML file name suffix
