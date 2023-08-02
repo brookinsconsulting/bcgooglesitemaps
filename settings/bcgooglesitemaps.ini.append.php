@@ -39,7 +39,7 @@ ClassFilterArray[]
 # Set this setting to true to include all nodes of content object in sitemap
 Main_Node_Only=false
 # Add parent nodeIDs to exclude content tree results from sitemap
-ExcludedNodeIDs[]$
+ExcludedNodeIDs[]
 #ExcludedNodeIDs[]=341
 
 */ ?>
