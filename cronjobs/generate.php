@@ -100,6 +100,7 @@ if ( $bcgooglesitemapsINI->hasVariable( 'BCGoogleSitemapSettings', 'SitemapRootN
     /**
      * BC: Define content tree node iteration node_id exclusion filter. Array of node_ids to exclude.
      */
+    $excludeNodes = $bcgooglesitemapsINI->variable( 'NodeSettings', 'ExcludeNodes' ) == 'enabled' ? true : false;
     $excludeNodeIDs = $bcgooglesitemapsINI->variable( 'NodeSettings', 'ExcludedNodeIDs' );
 }
 else
@@ -251,9 +252,12 @@ foreach ( $siteaccesses as $siteaccess )
         /**
          * BC: Test for exclude nodes
          */
-         if ( in_array( $nodeID, $excludeNodeIDs ) || str_contains( $nodeIDPath, implode( $excludeNodeIDs ) ) )
-         {
-             continue;
+	 if( $excludeNodes )
+	 {
+             if ( in_array( $nodeID, $excludeNodeIDs ) || str_contains( $nodeIDPath, implode( $excludeNodeIDs ) ) )
+             {
+                 continue;
+             }
          }
 
         /**
